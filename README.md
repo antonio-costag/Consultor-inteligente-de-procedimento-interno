@@ -1,67 +1,82 @@
 # Consultor Inteligente de Procedimentos Internos
 
-Trabalho avaliativo para a materia de Inteligencia Artificial
+Trabalho avaliativo para a materia de Inteligencia Artificial.
 
-## Melhorias Implementadas na Versão Final
+Sistema de onboarding para estagiarios de suporte de TI, com:
 
-Este projeto implementou uma **busca semântica** usando TF-IDF (Term Frequency-Inverse Document Similarity) para substituir a antiga busca por correspondência exata de palavras (`str.contains()`), tornando o sistema verdadeiramente inteligente na compreensão de consultas dos usuários.
+- **Trilhas de treinamento** guiadas passo a passo.
+- **Simulador de tarefas** que sorteia tickets reais da base.
+- **Mentor virtual** (Gemini) que responde duvidas com base nos POPs internos.
+- **Busca semantica** via TF-IDF + cosine similarity (nao busca por substring).
 
-### Problema Original
-A busca anterior usava `str.contains()` que só encontrava correspondências exatas de palavras:
-- Usuário pesquisa: "Impressora" 
-- Sistema só encontrava se houvesse exatamente "Impressora" nos dados
-- Falhava com sinônimos como "Equipamento de impressão", "dispositivo de saída", etc.
+## Estrutura
 
-### Solução Implementada
-Substituímos a busca por palavra-chave por **busca semântica** que:
+```
+.
+├── app.py                 # Servidor Flask (entrada principal web)
+├── main.py                # CLI legado
+├── search.py              # Logica TF-IDF + cosine similarity
+├── llm.py                 # Wrapper do Gemini
+├── templates/
+│   └── chat.html          # Frontend do chat
+├── tests/
+│   └── test_search.py     # Testes de verdade (unittest)
+├── dataset_suporte_interno_sintetico.csv.xls
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
 
-1. **Vetoriza o texto**: Converte procedimentos em vetores numéricos usando TF-IDF
-2. **Mede similaridade semântica**: Usa cosine similarity para encontrar conceitos relacionados
-3. **Recupera contexto relevante**: Encontra procedimentos similares mesmo sem palavras exatas
+## Como executar (interface web)
 
-### Exemplo de Melhoria
-**Consulta do usuário**: "Minha impressão não está funcionando"
-**Antes**: Nenhum resultado (sem correspondência exata de palavras)
-**Depois**: Encontra procedimentos sobre "Equipamento de impressão" e "dispositivo de saída" por similaridade semântica
+```bash
+pip install -r requirements.txt
+python app.py
+```
 
-### Como Funciona
-1. **Pré-processamento**: Combina Categoria_Problema + Regra_POP + Descricao_Chamado em documentos ricos
-2. **Vetorização**: TF-IDF cria matriz de características (unigramas e bigramas, remove stop words em português)
-3. **Consulta**: Vetoriza a pergunta do usuário no mesmo espaço
-4. **Similaridade**: Calcula cosine similarity entre consulta e todos os documentos
-5. **Recuperação**: Seleciona top-3 procedimentos mais similares semanticamente
-6. **Geração**: Envia resultados para o Gemini gerar resposta final
+Abrir `http://localhost:5000` no navegador.
 
-### Tecnologias Adicionadas
-- **scikit-learn**: Para TF-IDF Vectorizer e cosine similarity
-- **numpy**: Suporte numérico para operações vetoriais
+## Como executar (CLI)
 
-### Benefícios
-- ✅ Compreende sinônimos e conceitos relacionados
-- ✅ Funciona com erros de digitação leves (graças ao TF-IDF)
-- ✅ Recupera procedimentos relevantes mesmo com formulagem diferente
-- ✅ Mantém compatibilidade com busca exata quando apropriado
-- ✅ Baseado em técnicas ensinadas na aula 07 (Clustering e PCA - conceitos de vetorização)
+```bash
+python main.py
+```
 
-## Como Executar
+## Como rodar os testes
 
-1. Instale as dependências:
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+python -m unittest discover tests
+```
 
-2. Execute o programa:
-   ```bash
-   python main.py
-   ```
+## Como funciona a busca semantica
 
-## Estrutura do Projeto
-- `main.py`: Aplicação principal com busca semântica implementada
-- `dataset_suporte_interno_sintetico.csv.xls`: Base de procedimentos (CSV com separador ;)
-- `requirements.txt`: Dependências incluindo scikit-learn para busca semântica
-- `README.md`: Este arquivo
+1. Cada POP do CSV vira um documento: `Categoria + Regra + Descricao`.
+2. TF-IDF vetoriza os documentos (unigramas + bigramas, max 1000 features).
+3. A duvida do usuario e vetorizada no mesmo espaco.
+4. Cosine similarity ranqueia os POPs mais relevantes.
+5. Os top-3 vao no prompt do Gemini, que gera a resposta final.
+6. Se a busca semantica nao achar nada acima do limiar (0.1), um fallback
+   por palavra-chave e usado antes de pedir para escalar ao Senior.
 
-## Observações
-- Requer conexão com internet para API do Gemini
-- Índice semântico construído na inicialização para performance
-- Mantém todas as funcionalidades originais (trilhas de treinamento, simulador)
+### Observacao sobre stop words
+
+O scikit-learn nao tem lista de stop words em portugues por padrao, entao
+usamos `stop_words='english'`. Isso remove artigos/preposicoes comuns que
+poluem o TF-IDF. Para um trabalho academico o ingles serve como filtro
+suficiente; para producao o ideal seria usar NLTK com stopwords em PT-BR.
+
+## Sobre a chave da API
+
+A chave do Gemini esta em `llm.py` (hardcoded) por escolha do autor para
+o trabalho academico. Em producao, usar variavel de ambiente:
+
+```python
+import os
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+```
+
+## Observacoes
+
+- A chave atual e publica no historico do git. Troque antes de qualquer deploy.
+- O servidor Flask nao tem autenticacao (uso local apenas).
+- O modelo Gemini usado e `gemini-2.0-flash`.

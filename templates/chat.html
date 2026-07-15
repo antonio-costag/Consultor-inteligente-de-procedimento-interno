@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - Consultor de Procedimentos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            margin: auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .chat-header h1 { font-size: 1.5rem; margin: 0; }
+        .chat-header p { font-size: 0.85rem; opacity: 0.85; margin-top: 5px; }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message { max-width: 80%; word-wrap: break-word; }
+        .message p {
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+
+        .user-message { align-self: flex-end; }
+        .user-message p { background-color: #3498db; color: white; }
+
+        .bot-message { align-self: flex-start; }
+        .bot-message p { background-color: #ecf0f1; color: #2c3e50; }
+
+        .bot-meta {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            margin-top: 4px;
+            padding: 0 8px;
+        }
+        .pops-list {
+            align-self: flex-start;
+            background: #fafafa;
+            border-left: 3px solid #3498db;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            max-width: 80%;
+        }
+        .pops-list h4 { margin-bottom: 6px; color: #2c3e50; }
+        .pops-list ol { padding-left: 20px; }
+        .pops-list li { margin-bottom: 6px; }
+        .pops-list .sim { color: #27ae60; font-weight: bold; }
+        .pops-list .sem-sim { color: #7f8c8d; font-style: italic; }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #eee;
+            background-color: white;
+        }
+        #user-input {
+            flex-grow: 1;
+            padding: 12px 16px;
+            border: 2px solid #bdc3c7;
+            border-radius: 20px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        #user-input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+        }
+        #send-button {
+            margin-left: 10px;
+            padding: 0 20px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #send-button:hover { background-color: #27ae60; }
+        #send-button:active { transform: scale(0.98); }
+        #send-button:disabled { background-color: #95a5a6; cursor: not-allowed; }
+
+        @media (max-width: 600px) {
+            .chat-container { height: 100vh; max-width: 100%; border-radius: 0; }
+            .chat-header h1 { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Consultor de Procedimentos Internos</h1>
+            <p>Mentor virtual para duvidas de suporte de TI</p>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <p>Ola! Sou seu mentor virtual. Descreva o problema ou duvida sobre procedimentos internos.</p>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Digite sua pergunta..." autocomplete="off">
+            <button id="send-button">Enviar</button>
+        </div>
+    </div>
+
+<script>
+    const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('user-input');
+    const sendButton = document.getElementById('send-button');
+
+    function addMessage(text, isUser) {
+        const div = document.createElement('div');
+        div.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
+        const p = document.createElement('p');
+        p.textContent = text;
+        div.appendChild(p);
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return div;
+    }
+
+    function addPopsList(resultados, metodo) {
+        if (!resultados || resultados.length === 0) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'pops-list';
+        const h = document.createElement('h4');
+        h.textContent = 'POPs consultados (' + metodo + ')';
+        wrap.appendChild(h);
+        const ol = document.createElement('ol');
+        resultados.forEach(function (r) {
+            const li = document.createElement('li');
+            const simTxt = r.similarity !== null && r.similarity !== undefined
+                ? '<span class="sim">[' + r.similarity.toFixed(2) + ']</span> '
+                : '<span class="sem-sim">[fallback]</span> ';
+            li.innerHTML = simTxt + '<b>' + escape(r.categoria) + '</b>: ' + escape(r.regra);
+            ol.appendChild(li);
+        });
+        wrap.appendChild(ol);
+        chatMessages.appendChild(wrap);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function escape(s) {
+        if (s === null || s === undefined) return '';
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function addTyping() {
+        const div = document.createElement('div');
+        div.className = 'message bot-message';
+        div.id = 'typing';
+        const p = document.createElement('p');
+        p.textContent = 'Digitando...';
+        div.appendChild(p);
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeTyping() {
+        const t = document.getElementById('typing');
+        if (t) t.remove();
+    }
+
+    async function handleSend() {
+        const texto = userInput.value.trim();
+        if (!texto) return;
+        addMessage(texto, true);
+        userInput.value = '';
+        sendButton.disabled = true;
+        addTyping();
+
+        try {
+            const resp = await fetch('/api/consulta', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ duvida: texto }),
+            });
+            removeTyping();
+            if (!resp.ok) {
+                addMessage('Erro HTTP ' + resp.status, false);
+                return;
+            }
+            const data = await resp.json();
+            addMessage(data.resposta, false);
+            addPopsList(data.resultados, data.metodo);
+        } catch (e) {
+            removeTyping();
+            addMessage('Erro de conexao: ' + e.message, false);
+        } finally {
+            sendButton.disabled = false;
+            userInput.focus();
+        }
+    }
+
+    sendButton.addEventListener('click', handleSend);
+    userInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') handleSend();
+    });
+    userInput.focus();
+</script>
+</body>
+</html>
