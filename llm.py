@@ -1,15 +1,23 @@
 """
-Wrapper do Gemini para geracao de respostas com base em POPs recuperados.
+Wrapper do Groq (llama-3.1-8b-instant) para geracao de respostas com base
+em POPs recuperados.
 
 Usado tanto pelo CLI (main.py) quanto pelo servidor Flask (app.py).
+
+A chave da API e lida da variavel de ambiente GROQ_API_KEY. Crie um arquivo
+.env na raiz do projeto com:
+
+    GROQ_API_KEY=gsk_sua_chave_aqui
+
+O .env ja esta no .gitignore e nao sera commitado.
 """
 
-import google.generativeai as genai
+import os
 
-# Chave de API. Em producao isto deveria vir de variavel de ambiente;
-# mantida hardcoded por decisao do usuario para o trabalho academico.
-API_KEY = "AIzaSyDkoPFoZp0ZjzaUKqlg5GkKluhBo_hhRU8"
-MODELO = "gemini-2.0-flash"
+from groq import Groq
+
+API_KEY = os.environ.get("GROQ_API_KEY", "")
+MODELO = "llama-3.1-8b-instant"
 
 PROMPT_TEMPLATE = """Voce e um Consultor Inteligente de Procedimentos Internos
 ajudando um estagiario de suporte de TI. Responda a duvida do estagiario de forma
@@ -52,15 +60,36 @@ def _formatar_fatos(resultados):
 
 
 def configurar():
-    """Inicializa o SDK do Gemini. Chamado uma vez na inicializacao."""
-    genai.configure(api_key=API_KEY)
+    """Inicializacao lazy. Apenas avisa se a chave nao estiver configurada."""
+    if not API_KEY:
+        print("[AVISO] GROQ_API_KEY nao definida. Crie um .env ou exporte a variavel.")
+    return None
 
 
 def gerar_resposta(duvida, resultados, top_k=3):
-    """Envia o prompt para o Gemini e devolve o texto da resposta."""
+    """Envia o prompt para o llama-3.1-8b-instant (via Groq) e devolve o texto."""
+    if not API_KEY:
+        raise RuntimeError(
+            "GROQ_API_KEY nao configurada. Crie um .env na raiz do projeto "
+            "com a linha: GROQ_API_KEY=gsk_sua_chave"
+        )
+
     fatos = _formatar_fatos(resultados)
     prompt = PROMPT_TEMPLATE.format(fatos=fatos, duvida=duvida, top_k=top_k)
 
-    model = genai.GenerativeModel(MODELO)
-    response = model.generate_content(prompt)
-    return response.text, prompt
+    client = Groq(api_key=API_KEY)
+    response = client.chat.completions.create(
+        model=MODELO,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "Voce e um Consultor Inteligente de Procedimentos Internos "
+                    "que responde com base exclusivamente nos POPs fornecidos."
+                ),
+            },
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.2,
+    )
+    return response.choices[0].message.content, prompt

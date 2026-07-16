@@ -9,8 +9,12 @@ import os
 import time
 import random
 
+from dotenv import load_dotenv
 from rich import print
 from rich.panel import Panel
+
+# Carrega .env antes de qualquer import que dependa da chave
+load_dotenv()
 
 import llm
 import search as search_mod
@@ -160,7 +164,7 @@ def consulta_livre():
         print("\n")
         print(caixa)
     except Exception as e:
-        print(f"\n[ERRO] Ocorreu um erro na comunicacao com o Gemini:\n{e}")
+        print(f"\n[ERRO] Ocorreu um erro na comunicacao com a OpenAI:\n{e}")
 
     input("\nPressione ENTER para voltar...")
 

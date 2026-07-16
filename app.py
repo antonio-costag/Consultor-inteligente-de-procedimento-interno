@@ -6,7 +6,11 @@ Endpoints:
     POST /api/consulta -> recebe {"duvida": "..."} e devolve {"resposta": "...", "resultados": [...]}
 """
 
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
+
+# Carrega .env antes de qualquer import que dependa da chave
+load_dotenv()
 
 import llm
 import search as search_mod
@@ -55,7 +59,7 @@ def api_consulta():
         resposta, _ = llm.gerar_resposta(duvida, resultados, top_k=3)
     except Exception as e:
         return jsonify({
-            'resposta': f'Erro ao consultar o Gemini: {e}',
+            'resposta': f'Erro ao consultar a OpenAI: {e}',
             'resultados': [_serializar_resultado(r) for r in resultados],
             'metodo': metodo,
         }), 502
