@@ -11,8 +11,8 @@ import unittest
 
 import pandas as pd
 
-# Garante que o diretorio raiz esta no path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Garante que o diretorio src/ esta no path para `import search` resolver.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
 import search  # noqa: E402
 

@@ -21,11 +21,11 @@ O processo de integração (*onboarding*) de novos colaboradores de TI é histor
 ## 💡 A Solução
 Substituir a busca passiva tradicional por uma interface conversacional ativa e inteligente[cite: 21]. O sistema atua como um **Mentor Virtual** que lê, compreende a intenção de perguntas informais usando Processamento de Linguagem Natural (PLN) e sintetiza a resposta em tempo real com base oficial nos Procedimentos Operacionais Padrão (POPs)[cite: 21]. 
 
-<video src="demonstracoes/chat%20eduerom.mp4" width="60%" controls>
+<video src="demos/chat eduerom.mp4" width="60%" controls>
   Seu navegador não suporta a tag de vídeo.
 </video>
 
-<video src="demonstracoes/interacao%20natural.mp4" width="60%" controls>
+<video src="demos/interacao natural.mp4" width="60%" controls>
   Seu navegador não suporta a tag de vídeo.
 </video>
 
@@ -80,34 +80,64 @@ Sistema de onboarding para estagiarios de suporte de TI, com:
 ## Estrutura
 
 ```
-meu-projeto-ia/
-├── README.md                       # A vitrine do projeto (este arquivo)
+.
+├── README.md                                  # Vitrine do projeto (este arquivo)
+├── requirements.txt                           # Dependências para reproduzir o ambiente
+├── .env.example                               # Modelo para a GROQ_API_KEY (não comitar o .env)
+│
+├── src/                                       # Código-fonte do projeto
+│   ├── app.py                                 #   Projeto principal: chat web (Flask) em :5000
+│   ├── cli.py                                 #   Protótipo CLI (menu + simulador + mentor) — base para
+│   │                                          #   evoluções futuras (trilhas, gamificação etc.)
+│   ├── search.py                              #   Busca semântica (TF-IDF + cosine + fallback por palavra-chave)
+│   ├── llm.py                                 #   Wrapper do Groq (llama-3.1-8b-instant) com prompt blindado
+│   ├── atualizar_dataset.py                   #   Script de reescrita dos POPs (5 variações por categoria)
+│   └── templates/
+│       └── chat.html                          #   UI do chat web
+│
 ├── notebooks/
-│   └── desenvolvimento.ipynb       # EDA, experimentos e treino do modelo
-├── src/
-│   └── app.py                      # Código organizado (app, funções, pipeline)
-├── data/                           # Dados brutos e tratados (ou instruções de download)
+│   └── desenvolvimento.ipynb                  # EDA, inspeção do TF-IDF, casos de validação
+│
+├── data/
+│   └── dataset_suporte_interno_sintetico.csv.xls
+│
 ├── relatorio/
-│   └── relatorio_tecnico.pdf       # Relatório técnico do projeto
+│   └── relatorio_tecnico.pdf                  # Relatório técnico (PDF) do trabalho
+│
 ├── slides/
-│   └── pitch.pdf                   # Slides de apresentação
-└── requirements.txt                # Dependências para reproduzir o ambiente
+│   └── Slide de IA Consultor CIPA.pdf         # Slides de apresentação (pitch)
+│
+├── demos/                                     # Vídeos curtos de demonstração da interface
+│   ├── chat eduerom.mp4
+│   └── interacao natural.mp4
+│
+└── tests/                                     # Testes unitários (unittest)
+    ├── test_search.py                         #   Cobertura da busca semântica
+    └── test_app.py                            #   Cobertura do endpoint Flask + intenções sociais
 ```
 
-## Como executar (interface web)
+### Qual é o projeto principal?
+
+- **Chat com interface web** (`src/app.py` + `src/templates/chat.html`): é o produto
+  avaliado. Sobe um servidor Flask, recebe a dúvida em JSON, aplica o
+  classificador de intenções sociais, faz a busca semântica nos POPs e devolve
+  a resposta do llama-3.1-8b-instant.
+- **Chat no terminal** (`src/cli.py`): protótipo anterior. Foi mantido como
+  ambiente de teste para possíveis implementações futuras (trilhas de
+  onboarding, simulador de tickets, gamificação) e como base de comparação
+  com a interface web.
+
+## Como executar
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env       # e cole sua chave Groq no .env
-python app.py
-```
+cp .env.example .env       # cole sua chave Groq no .env
 
-Abrir `http://localhost:5000` no navegador.
+# Interface web (principal)
+python src/main.py          # abre em http://localhost:5000
 
-## Como executar (CLI)
-
-```bash
-python main.py
+# CLI (testes / experimentos)
+python src/cli.py
 ```
 
 ## Como rodar os testes

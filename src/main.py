@@ -6,7 +6,16 @@ Endpoints:
     POST /api/consulta -> recebe {"duvida": "..."} e devolve {"resposta": "...", "resultados": [...]}
 """
 
+import os
+import sys
 import unicodedata
+
+# Garante que `import llm` e `import search` funcionem quando este arquivo
+# for executado de qualquer diretorio (python src/app.py ou
+# python -m src.app), colocando src/ no sys.path.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
 
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify

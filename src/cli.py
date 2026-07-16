@@ -6,8 +6,15 @@ A consulta livre usa busca semantica (search.py) + Gemini (llm.py).
 """
 
 import os
+import sys
 import time
 import random
+
+# Garante que `import llm` e `import search` funcionem independente de
+# como o script for invocado, colocando src/ no sys.path.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
 
 from dotenv import load_dotenv
 from rich import print

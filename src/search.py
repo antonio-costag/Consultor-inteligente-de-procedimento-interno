@@ -38,8 +38,21 @@ class SemanticSearch:
 
     def __init__(self, csv_path=None):
         if csv_path is None:
+            # Caminho preferencial: <raiz>/data/ (estrutura nova do projeto).
+            # Fallback: mesma pasta do modulo (estrutura antiga, antes da
+            # reorganizacao), para nao quebrar uso externo.
             base = os.path.dirname(os.path.abspath(__file__))
-            csv_path = os.path.join(base, 'dataset_suporte_interno_sintetico.csv.xls')
+            raiz = os.path.dirname(base)  # src/ -> raiz do projeto
+            candidatos = [
+                os.path.join(raiz, 'data', 'dataset_suporte_interno_sintetico.csv.xls'),
+                os.path.join(base, 'dataset_suporte_interno_sintetico.csv.xls'),
+            ]
+            for c in candidatos:
+                if os.path.exists(c):
+                    csv_path = c
+                    break
+            else:
+                csv_path = candidatos[0]  # vai falhar em _carregar com aviso
         self.csv_path = csv_path
         self.df = None
         self.vectorizer = None

@@ -9,8 +9,9 @@ import sys
 import unittest
 from unittest import mock
 
-# Garante que o diretorio raiz esta no path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Garante que o diretorio src/ esta no path para `import app`, `import llm`
+# e `import search` resolverem a partir de la.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
 import app  # noqa: E402
 import search  # noqa: E402
