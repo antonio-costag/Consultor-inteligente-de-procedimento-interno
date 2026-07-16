@@ -13,8 +13,17 @@ O .env ja esta no .gitignore e nao sera commitado.
 """
 
 import os
+import sys
 
 from groq import Groq
+
+# Garante que `import observabilidade` funcione quando `llm.py` for
+# executado fora do contexto do pacote `src`.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
+
+from observabilidade import registrar_chamada_llm  # noqa: E402
 
 MODELO = "llama-3.1-8b-instant"
 
@@ -99,8 +108,13 @@ def _get_api_key():
     return chave
 
 
+@registrar_chamada_llm
 def gerar_resposta(duvida, resultados, top_k=3):
-    """Envia o prompt para o llama-3.1-8b-instant (via Groq) e devolve o texto."""
+    """Envia o prompt para o llama-3.1-8b-instant (via Groq) e devolve
+    ``(texto, prompt, usage)`` onde ``usage`` eh um dict com
+    ``prompt_tokens``, ``completion_tokens`` e ``total_tokens`` (0 se o
+    provider nao retornar a contagem).
+    """
     fatos = _formatar_fatos(resultados)
     prompt = PROMPT_TEMPLATE.format(fatos=fatos, duvida=duvida, top_k=top_k)
 
@@ -119,4 +133,12 @@ def gerar_resposta(duvida, resultados, top_k=3):
         ],
         temperature=0.2,
     )
-    return response.choices[0].message.content, prompt
+    texto = response.choices[0].message.content
+    raw = getattr(response, "usage", None)
+    usage = {
+        "prompt_tokens": int(getattr(raw, "prompt_tokens", 0) or 0),
+        "completion_tokens": int(getattr(raw, "completion_tokens", 0) or 0),
+        "total_tokens": int(getattr(raw, "total_tokens", 0) or 0),
+        "modelo": getattr(response, "model", MODELO),
+    }
+    return texto, prompt, usage

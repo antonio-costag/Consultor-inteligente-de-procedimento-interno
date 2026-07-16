@@ -166,7 +166,7 @@ def consulta_livre():
         print("[INFO] Nenhum procedimento encontrado na base local.")
 
     try:
-        resposta, _prompt = llm.gerar_resposta(duvida, resultados, top_k=3)
+        resposta, _prompt, _usage = llm.gerar_resposta(duvida, resultados, top_k=3)
         caixa = Panel(resposta, title="Mentor IA", style="white", width=100)
         print("\n")
         print(caixa)

@@ -119,7 +119,9 @@ class ApiConsultaTestCase(unittest.TestCase):
     def test_frase_mista_cai_no_fluxo_tecnico(self):
         # Mocka a LLM para nao precisar de chave real.
         with mock.patch.object(
-            app.llm, 'gerar_resposta', return_value=('resposta mock', '')
+            app.llm,
+            'gerar_resposta',
+            return_value=('resposta mock', '', {'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, 'modelo': 'mock'}),
         ):
             resp = self.client.post(
                 '/api/consulta', json={'duvida': 'obrigado, mas e a VPN?'}
@@ -132,7 +134,9 @@ class ApiConsultaTestCase(unittest.TestCase):
     def test_duvida_tecnica_segue_fluxo_normal(self):
         # Regressao: o caminho real nao foi alterado.
         with mock.patch.object(
-            app.llm, 'gerar_resposta', return_value=('resposta mock', '')
+            app.llm,
+            'gerar_resposta',
+            return_value=('resposta mock', '', {'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, 'modelo': 'mock'}),
         ):
             resp = self.client.post(
                 '/api/consulta', json={'duvida': 'minha VPN nao conecta'}

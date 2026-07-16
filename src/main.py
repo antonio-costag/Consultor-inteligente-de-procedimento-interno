@@ -8,6 +8,7 @@ Endpoints:
 
 import os
 import sys
+import time
 import unicodedata
 
 # Garante que `import llm` e `import search` funcionem quando este arquivo
@@ -24,10 +25,15 @@ from flask import Flask, render_template, request, jsonify
 load_dotenv()
 
 import llm
+import observabilidade
 import search as search_mod
 
 
+# Exposição para o shim ``app.py`` e para mocks em tests/test_app.py
+# que referenciam ``app.llm`` / ``app.search``.
 app = Flask(__name__)
+app.llm = llm
+app.search = search_mod
 
 # Estado carregado uma unica vez no startup
 busca: search_mod.SemanticSearch | None = None
@@ -194,6 +200,9 @@ def api_consulta():
             'cortesia': RESPOSTA_CORTESIA,
             'despedida': RESPOSTA_DESPEDIDA,
         }[intencao]
+        observabilidade.log_request(
+            metodo='cortesia', duracao_ms=0.0, top_score=0.0,
+        )
         return jsonify({
             'resposta': resposta_fixa,
             'resultados': [],
@@ -201,23 +210,40 @@ def api_consulta():
         })
 
     if not busca or not busca.disponivel():
+        observabilidade.log_request(
+            metodo='nenhum', duracao_ms=0.0, top_score=0.0,
+        )
         return jsonify({
             'resposta': 'Base de POPs nao carregada. Contate o administrador.',
             'resultados': [],
             'metodo': 'nenhum',
         }), 500
 
+    t0 = time.perf_counter()
     resultados, metodo = busca.consulta_completa(duvida, top_k=3)
+    top_score = float(resultados[0]['similarity']) if resultados else 0.0
 
     try:
-        resposta, _ = llm.gerar_resposta(duvida, resultados, top_k=3)
+        resposta, _prompt, _usage = llm.gerar_resposta(duvida, resultados, top_k=3)
     except Exception as e:
+        observabilidade.log_request(
+            metodo=metodo,
+            duracao_ms=(time.perf_counter() - t0) * 1000.0,
+            top_score=top_score,
+            ok=False,
+            erro=type(e).__name__,
+        )
         return jsonify({
             'resposta': f'Erro ao consultar a OpenAI: {e}',
             'resultados': [_serializar_resultado(r) for r in resultados],
             'metodo': metodo,
         }), 502
 
+    observabilidade.log_request(
+        metodo=metodo,
+        duracao_ms=(time.perf_counter() - t0) * 1000.0,
+        top_score=top_score,
+    )
     return jsonify({
         'resposta': resposta,
         'resultados': [_serializar_resultado(r) for r in resultados],

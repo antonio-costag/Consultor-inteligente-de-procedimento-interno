@@ -1,0 +1,509 @@
+{
+  "test_times": [
+    {
+      "id": "test_app.ApiConsultaTestCase.test_cortesia_com_acentos_e_pontuacao",
+      "short": "test_cortesia_com_acentos_e_pontuacao",
+      "module": "app",
+      "class": "ApiConsultaTestCase",
+      "ms": 28.975,
+      "ok": true
+    },
+    {
+      "id": "test_app.ApiConsultaTestCase.test_cortesia_com_palavras_neutras",
+      "short": "test_cortesia_com_palavras_neutras",
+      "module": "app",
+      "class": "ApiConsultaTestCase",
+      "ms": 0.925,
+      "ok": true
+    },
+    {
+      "id": "test_app.ApiConsultaTestCase.test_despedida_retorna_resposta_curta",
+      "short": "test_despedida_retorna_resposta_curta",
+      "module": "app",
+      "class": "ApiConsultaTestCase",
+      "ms": 0.823,
+      "ok": true
+    },
+    {
+      "id": "test_app.ApiConsultaTestCase.test_duvida_tecnica_segue_fluxo_normal",
+      "short": "test_duvida_tecnica_segue_fluxo_normal",
+      "module": "app",
+      "class": "ApiConsultaTestCase",
+      "ms": 7.944,
+      "ok": true
+    },
+    {
+      "id": "test_app.ApiConsultaTestCase.test_duvida_vazia_retorna_400",
+      "short": "test_duvida_vazia_retorna_400",
+      "module": "app",
+      "class": "ApiConsultaTestCase",
+      "ms": 0.85,
+      "ok": true
+    },
+    {
+      "id": "test_app.ApiConsultaTestCase.test_frase_mista_cai_no_fluxo_tecnico",
+      "short": "test_frase_mista_cai_no_fluxo_tecnico",
+      "module": "app",
+      "class": "ApiConsultaTestCase",
+      "ms": 5.654,
+      "ok": true
+    },
+    {
+      "id": "test_app.ApiConsultaTestCase.test_saudacao_retorna_resposta_curta",
+      "short": "test_saudacao_retorna_resposta_curta",
+      "module": "app",
+      "class": "ApiConsultaTestCase",
+      "ms": 0.817,
+      "ok": true
+    },
+    {
+      "id": "test_app.IntencaoSocialTestCase.test_acentos_e_pontuacao",
+      "short": "test_acentos_e_pontuacao",
+      "module": "app",
+      "class": "IntencaoSocialTestCase",
+      "ms": 0.071,
+      "ok": true
+    },
+    {
+      "id": "test_app.IntencaoSocialTestCase.test_cortesia_com_palavras_neutras",
+      "short": "test_cortesia_com_palavras_neutras",
+      "module": "app",
+      "class": "IntencaoSocialTestCase",
+      "ms": 0.153,
+      "ok": true
+    },
+    {
+      "id": "test_app.IntencaoSocialTestCase.test_cortesia_simples",
+      "short": "test_cortesia_simples",
+      "module": "app",
+      "class": "IntencaoSocialTestCase",
+      "ms": 0.049,
+      "ok": true
+    },
+    {
+      "id": "test_app.IntencaoSocialTestCase.test_despedida_com_palavras_neutras",
+      "short": "test_despedida_com_palavras_neutras",
+      "module": "app",
+      "class": "IntencaoSocialTestCase",
+      "ms": 0.053,
+      "ok": true
+    },
+    {
+      "id": "test_app.IntencaoSocialTestCase.test_despedida_simples",
+      "short": "test_despedida_simples",
+      "module": "app",
+      "class": "IntencaoSocialTestCase",
+      "ms": 0.055,
+      "ok": true
+    },
+    {
+      "id": "test_app.IntencaoSocialTestCase.test_frase_mista_nao_e_cortesia",
+      "short": "test_frase_mista_nao_e_cortesia",
+      "module": "app",
+      "class": "IntencaoSocialTestCase",
+      "ms": 0.126,
+      "ok": true
+    },
+    {
+      "id": "test_app.IntencaoSocialTestCase.test_saudacao_com_palavras_neutras",
+      "short": "test_saudacao_com_palavras_neutras",
+      "module": "app",
+      "class": "IntencaoSocialTestCase",
+      "ms": 0.077,
+      "ok": true
+    },
+    {
+      "id": "test_app.IntencaoSocialTestCase.test_saudacao_simples",
+      "short": "test_saudacao_simples",
+      "module": "app",
+      "class": "IntencaoSocialTestCase",
+      "ms": 0.038,
+      "ok": true
+    },
+    {
+      "id": "test_app.IntencaoSocialTestCase.test_texto_vazio",
+      "short": "test_texto_vazio",
+      "module": "app",
+      "class": "IntencaoSocialTestCase",
+      "ms": 0.021,
+      "ok": true
+    },
+    {
+      "id": "test_search.SemanticSearchTestCase.test_busca_sinonimo_encontra_resultado",
+      "short": "test_busca_sinonimo_encontra_resultado",
+      "module": "search",
+      "class": "SemanticSearchTestCase",
+      "ms": 5.128,
+      "ok": true
+    },
+    {
+      "id": "test_search.SemanticSearchTestCase.test_busca_termo_direto",
+      "short": "test_busca_termo_direto",
+      "module": "search",
+      "class": "SemanticSearchTestCase",
+      "ms": 4.583,
+      "ok": true
+    },
+    {
+      "id": "test_search.SemanticSearchTestCase.test_busca_wifi",
+      "short": "test_busca_wifi",
+      "module": "search",
+      "class": "SemanticSearchTestCase",
+      "ms": 5.099,
+      "ok": true
+    },
+    {
+      "id": "test_search.SemanticSearchTestCase.test_consulta_vazia",
+      "short": "test_consulta_vazia",
+      "module": "search",
+      "class": "SemanticSearchTestCase",
+      "ms": 0.041,
+      "ok": true
+    },
+    {
+      "id": "test_search.SemanticSearchTestCase.test_dataset_carregado",
+      "short": "test_dataset_carregado",
+      "module": "search",
+      "class": "SemanticSearchTestCase",
+      "ms": 0.045,
+      "ok": true
+    },
+    {
+      "id": "test_search.SemanticSearchTestCase.test_indice_tfidf_construido",
+      "short": "test_indice_tfidf_construido",
+      "module": "search",
+      "class": "SemanticSearchTestCase",
+      "ms": 0.026,
+      "ok": true
+    },
+    {
+      "id": "test_search.SemanticSearchTestCase.test_resultados_ordenados_por_similaridade",
+      "short": "test_resultados_ordenados_por_similaridade",
+      "module": "search",
+      "class": "SemanticSearchTestCase",
+      "ms": 9.826,
+      "ok": true
+    },
+    {
+      "id": "test_search.SemanticSearchTestCase.test_top_k_respeitado",
+      "short": "test_top_k_respeitado",
+      "module": "search",
+      "class": "SemanticSearchTestCase",
+      "ms": 5.516,
+      "ok": true
+    }
+  ],
+  "dataset": {
+    "total": 500,
+    "by_category": {
+      "Acesso CAFe / EDUROAM": 109,
+      "Software Pirata": 106,
+      "Equipamento InservÃvel": 105,
+      "Visita in Loco": 91,
+      "Suprimento de Impressora": 89
+    }
+  },
+  "social": [
+    {
+      "esperado": "saudacao",
+      "obtido": "saudacao",
+      "frase": "oi"
+    },
+    {
+      "esperado": "saudacao",
+      "obtido": "saudacao",
+      "frase": "Ola!"
+    },
+    {
+      "esperado": "saudacao",
+      "obtido": "saudacao",
+      "frase": "bom dia"
+    },
+    {
+      "esperado": "saudacao",
+      "obtido": "saudacao",
+      "frase": "oi galera"
+    },
+    {
+      "esperado": "saudacao",
+      "obtido": "saudacao",
+      "frase": "bom dia meu amigo"
+    },
+    {
+      "esperado": "saudacao",
+      "obtido": "saudacao",
+      "frase": "olá!"
+    },
+    {
+      "esperado": "cortesia",
+      "obtido": "cortesia",
+      "frase": "obrigado"
+    },
+    {
+      "esperado": "cortesia",
+      "obtido": "cortesia",
+      "frase": "Obrigado!"
+    },
+    {
+      "esperado": "cortesia",
+      "obtido": "cortesia",
+      "frase": "muito obrigado"
+    },
+    {
+      "esperado": "cortesia",
+      "obtido": "cortesia",
+      "frase": "valeu"
+    },
+    {
+      "esperado": "cortesia",
+      "obtido": "cortesia",
+      "frase": "obrigado pela ajuda"
+    },
+    {
+      "esperado": "cortesia",
+      "obtido": "cortesia",
+      "frase": "valeu demais"
+    },
+    {
+      "esperado": "cortesia",
+      "obtido": "cortesia",
+      "frase": "brigadao pela forca"
+    },
+    {
+      "esperado": "cortesia",
+      "obtido": "cortesia",
+      "frase": "obrigado amigo"
+    },
+    {
+      "esperado": "cortesia",
+      "obtido": "cortesia",
+      "frase": "muito obrigado mesmo"
+    },
+    {
+      "esperado": "cortesia",
+      "obtido": "cortesia",
+      "frase": "OBRIGADO"
+    },
+    {
+      "esperado": "despedida",
+      "obtido": "despedida",
+      "frase": "tchau"
+    },
+    {
+      "esperado": "despedida",
+      "obtido": "despedida",
+      "frase": "Ate logo!"
+    },
+    {
+      "esperado": "despedida",
+      "obtido": "despedida",
+      "frase": "tchau pessoal"
+    },
+    {
+      "esperado": "despedida",
+      "obtido": "despedida",
+      "frase": "ate mais galera"
+    },
+    {
+      "esperado": "mista",
+      "obtido": null,
+      "frase": "obrigado, mas e a VPN?"
+    },
+    {
+      "esperado": "mista",
+      "obtido": null,
+      "frase": "valeu, mas a impressora nao funciona"
+    },
+    {
+      "esperado": "mista",
+      "obtido": null,
+      "frase": "oi, como configuro o wifi?"
+    }
+  ],
+  "similarity": [
+    {
+      "query": "impressora com defeito",
+      "score": 0.1871
+    },
+    {
+      "query": "impressora com defeito",
+      "score": 0.1278
+    },
+    {
+      "query": "impressora com defeito",
+      "score": 0.1247
+    },
+    {
+      "query": "wifi nao conecta",
+      "score": 0.1066
+    },
+    {
+      "query": "wifi nao conecta",
+      "score": 0.0626
+    },
+    {
+      "query": "wifi nao conecta",
+      "score": 0.0596
+    },
+    {
+      "query": "senha do eduroam invalida",
+      "score": 0.2666
+    },
+    {
+      "query": "senha do eduroam invalida",
+      "score": 0.1991
+    },
+    {
+      "query": "senha do eduroam invalida",
+      "score": 0.1609
+    },
+    {
+      "query": "software pirata instalacao",
+      "score": 0.2657
+    },
+    {
+      "query": "software pirata instalacao",
+      "score": 0.2587
+    },
+    {
+      "query": "software pirata instalacao",
+      "score": 0.197
+    },
+    {
+      "query": "acesso ao cafe dos professores",
+      "score": 0.1899
+    },
+    {
+      "query": "acesso ao cafe dos professores",
+      "score": 0.1563
+    },
+    {
+      "query": "acesso ao cafe dos professores",
+      "score": 0.1429
+    },
+    {
+      "query": "visita do loco",
+      "score": 0.1924
+    },
+    {
+      "query": "visita do loco",
+      "score": 0.1809
+    },
+    {
+      "query": "visita do loco",
+      "score": 0.1517
+    },
+    {
+      "query": "impressora travando",
+      "score": 0.3087
+    },
+    {
+      "query": "impressora travando",
+      "score": 0.3003
+    },
+    {
+      "query": "impressora travando",
+      "score": 0.2997
+    },
+    {
+      "query": "esqueci a senha do sistema",
+      "score": 0.1548
+    },
+    {
+      "query": "esqueci a senha do sistema",
+      "score": 0.1065
+    },
+    {
+      "query": "esqueci a senha do sistema",
+      "score": 0.1042
+    },
+    {
+      "query": "problema de suporte",
+      "score": 0.1358
+    },
+    {
+      "query": "problema de suporte",
+      "score": 0.122
+    },
+    {
+      "query": "problema de suporte",
+      "score": 0.1086
+    },
+    {
+      "query": "equipamento de impressao quebrado",
+      "score": 0.174
+    },
+    {
+      "query": "equipamento de impressao quebrado",
+      "score": 0.097
+    },
+    {
+      "query": "equipamento de impressao quebrado",
+      "score": 0.0941
+    },
+    {
+      "query": "minha VPN nao conecta",
+      "score": 0.1226
+    },
+    {
+      "query": "minha VPN nao conecta",
+      "score": 0.0947
+    },
+    {
+      "query": "minha VPN nao conecta",
+      "score": 0.0933
+    },
+    {
+      "query": "como configuro o email",
+      "score": 0.1222
+    },
+    {
+      "query": "computador nao liga",
+      "score": 0.1498
+    },
+    {
+      "query": "computador nao liga",
+      "score": 0.1382
+    },
+    {
+      "query": "computador nao liga",
+      "score": 0.1283
+    },
+    {
+      "query": "site da universidade fora do ar",
+      "score": 0.1304
+    },
+    {
+      "query": "site da universidade fora do ar",
+      "score": 0.1149
+    },
+    {
+      "query": "site da universidade fora do ar",
+      "score": 0.1128
+    }
+  ],
+  "loc": {
+    "src/main.py": 181,
+    "src/search.py": 130,
+    "src/llm.py": 99,
+    "src/cli.py": 173,
+    "src/atualizar_dataset.py": 295,
+    "src/app.py": 23,
+    "tests/test_search.py": 57,
+    "tests/test_app.py": 124
+  },
+  "confusion": {
+    "TP": 4,
+    "FP": 1,
+    "TN": 3,
+    "FN": 1,
+    "precision": 0.8,
+    "recall": 0.8,
+    "f1": 0.8
+  },
+  "tests_by_class": {
+    "ApiConsultaTestCase": 7,
+    "IntencaoSocialTestCase": 9,
+    "SemanticSearchTestCase": 8
+  }
+}
