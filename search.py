@@ -6,15 +6,35 @@ demo_semantic_search.py, demo_final.py e test_semantic_search.py.
 """
 
 import os
+import re
+import unicodedata
+
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
+def _normalizar(texto):
+    """Lowercase + remove acentos. 'EDUROAM' e 'Eduroam' viram o mesmo token."""
+    if not texto:
+        return ""
+    txt = texto.lower()
+    # Decompõe caracteres acentuados e remove os diacríticos
+    txt = "".join(
+        c for c in unicodedata.normalize("NFD", txt)
+        if unicodedata.category(c) != "Mn"
+    )
+    # Mantém só letras, numeros e espacos
+    txt = re.sub(r"[^a-z0-9\s]", " ", txt)
+    # Colapsa espacos multiplos
+    txt = re.sub(r"\s+", " ", txt).strip()
+    return txt
+
+
 class SemanticSearch:
     """Wrapper de busca semantica sobre o dataset de POPs."""
 
-    SIMILARITY_THRESHOLD = 0.1
+    SIMILARITY_THRESHOLD = 0.05
 
     def __init__(self, csv_path=None):
         if csv_path is None:
@@ -33,18 +53,23 @@ class SemanticSearch:
             self.df = None
             return
 
+        # Normaliza cada coluna antes de montar o documento, para o TF-IDF
+        # receber texto limpo (sem acento, lowercase, sem pontuacao).
         documentos = [
-            f"{row['Categoria_Problema']} {row['Regra_POP']} {row['Descricao_Chamado']}"
+            _normalizar(
+                f"{row['Categoria_Problema']} {row['Regra_POP']} {row['Descricao_Chamado']}"
+            )
             for _, row in self.df.iterrows()
         ]
-        # stop_words em ingles: o dataset e os POPs sao escritos em PT-BR,
-        # mas sklearn nao tem stopwords em portugues por padrao. Mantemos
-        # 'english' para cortar artigos/preposicoes que poluem o TF-IDF.
+        # Sem stop_words: o dataset e em PT-BR e o sklearn nao tem lista
+        # em portugues por padrao. Usar 'english' apenas polui o vocabulario.
+        # Bigramas ajudam em termos compostos do dominio (ex: "acesso cafe",
+        # "software pirata", "visita loco").
         self.vectorizer = TfidfVectorizer(
             lowercase=True,
-            stop_words='english',
+            stop_words=None,
             ngram_range=(1, 2),
-            max_features=1000,
+            max_features=2000,
         )
         self.matrix = self.vectorizer.fit_transform(documentos)
 
@@ -52,39 +77,69 @@ class SemanticSearch:
         return self.df is not None and self.matrix is not None
 
     def buscar(self, consulta, top_k=3):
-        """Retorna ate `top_k` resultados com similaridade acima do limiar."""
+        """Retorna ate `top_k` resultados relevantes, sem duplicar o mesmo POP."""
         if not self.disponivel() or not consulta or not consulta.strip():
             return []
 
-        query_vec = self.vectorizer.transform([consulta.lower()])
+        query_norm = _normalizar(consulta)
+        query_vec = self.vectorizer.transform([query_norm])
         sims = cosine_similarity(query_vec, self.matrix).flatten()
-        top_idx = sims.argsort()[-top_k:][::-1]
+
+        # Ordem decrescente de score (np.argsort ascendente, [-top_k:] pega os
+        # maiores no final, [::-1] inverte para o maior primeiro).
+        idx_ordenado = sims.argsort()[::-1]
 
         resultados = []
-        for idx in top_idx:
+        regras_vistas = set()  # dedup por texto da regra para evitar
+                               # 3 linhas identicas do mesmo POP
+
+        for idx in idx_ordenado:
             score = float(sims[idx])
-            if score > self.SIMILARITY_THRESHOLD:
-                resultados.append({
-                    'idx': int(idx),
-                    'similarity': score,
-                    'row': self.df.iloc[idx].to_dict(),
-                })
+            if score <= self.SIMILARITY_THRESHOLD:
+                break  # scores ja vem em ordem decrescente, pode parar
+            if len(resultados) >= top_k:
+                break
+
+            regra = self.df.iloc[idx]['Regra_POP']
+            if regra in regras_vistas:
+                continue
+            regras_vistas.add(regra)
+
+            resultados.append({
+                'idx': int(idx),
+                'similarity': score,
+                'row': self.df.iloc[idx].to_dict(),
+            })
+
         return resultados
 
     def buscar_fallback_palavras(self, consulta, top_k=3):
         """Fallback antigo: busca por substring caso a busca semantica nao ache nada."""
         if not self.disponivel() or not consulta:
             return []
-        palavras = consulta.lower().split()
+        palavras = _normalizar(consulta).split()
         mask = pd.Series(False, index=self.df.index)
         for palavra in palavras:
             if len(palavra) > 3:
-                mask |= self.df['Categoria_Problema'].str.lower().str.contains(palavra, na=False) | \
-                        self.df['Regra_POP'].str.lower().str.contains(palavra, na=False)
-        return [
-            {'idx': int(i), 'similarity': None, 'row': row.to_dict()}
-            for i, row in self.df[mask].head(top_k).iterrows()
-        ]
+                mask |= self.df['Categoria_Problema'].apply(
+                    lambda x: _normalizar(str(x)).find(palavra) >= 0
+                ) | self.df['Regra_POP'].apply(
+                    lambda x: _normalizar(str(x)).find(palavra) >= 0
+                )
+        resultados = []
+        regras_vistas = set()
+        for _, row in self.df[mask].iterrows():
+            if row['Regra_POP'] in regras_vistas:
+                continue
+            regras_vistas.add(row['Regra_POP'])
+            resultados.append({
+                'idx': int(row.name),
+                'similarity': None,
+                'row': row.to_dict(),
+            })
+            if len(resultados) >= top_k:
+                break
+        return resultados
 
     def consulta_completa(self, consulta, top_k=3):
         """Tenta busca semantica primeiro; se vazia, tenta fallback por palavra-chave."""
