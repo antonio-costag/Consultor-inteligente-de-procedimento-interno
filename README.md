@@ -102,7 +102,8 @@ Sistema de onboarding para estagiarios de suporte de TI, com:
 │   └── dataset_suporte_interno_sintetico.csv.xls
 │
 ├── relatorio/
-│   └── relatorio_tecnico.pdf                  # Relatório técnico (PDF) do trabalho
+│   ├── relatorio_tecnico.pdf                  # Relatório técnico (PDF) do trabalho
+│   └── graficos_teste.html                    # Graficos dos testes (HTML) do trabalho
 │
 ├── slides/
 │   └── Slide de IA Consultor CIPA.pdf         # Slides de apresentação (pitch)
