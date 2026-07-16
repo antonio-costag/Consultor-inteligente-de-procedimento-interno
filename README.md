@@ -21,7 +21,15 @@ O processo de integração (*onboarding*) de novos colaboradores de TI é histor
 ## 💡 A Solução
 Substituir a busca passiva tradicional por uma interface conversacional ativa e inteligente[cite: 21]. O sistema atua como um **Mentor Virtual** que lê, compreende a intenção de perguntas informais usando Processamento de Linguagem Natural (PLN) e sintetiza a resposta em tempo real com base oficial nos Procedimentos Operacionais Padrão (POPs)[cite: 21]. 
 
-![Demonstração do Sistema](link-para-o-gif-ou-imagem-aqui.gif) *(Adicione aqui um GIF ou print da tela do chat rodando)*
+<video src="demonstracoes/chat%20eduerom.mp4" width="60%" controls>
+  Seu navegador não suporta a tag de vídeo.
+</video>
+
+<video src="demonstracoes/interacao%20natural.mp4" width="60%" controls>
+  Seu navegador não suporta a tag de vídeo.
+</video>
+
+
 
 ## 📊 Dados
 * **Fonte e Tamanho:** O projeto utiliza um *dataset* sintético (`dataset_suporte_interno_sintetico.csv.xls`) simulando uma base de conhecimento de suporte de TI universitário (ex: PROGEP, DERCA, EDUROAM), totalizando 500 linhas[cite: 21].
@@ -72,20 +80,18 @@ Sistema de onboarding para estagiarios de suporte de TI, com:
 ## Estrutura
 
 ```
-.
-├── app.py                 # Servidor Flask (entrada principal web)
-├── main.py                # CLI legado
-├── search.py              # Logica TF-IDF + cosine similarity
-├── llm.py                 # Wrapper do Groq (llama-3.1-8b-instant)
-├── templates/
-│   └── chat.html          # Frontend do chat
-├── tests/
-│   └── test_search.py     # Testes de verdade (unittest)
-├── dataset_suporte_interno_sintetico.csv.xls
-├── requirements.txt
-├── .env.example           # Modelo do arquivo de variaveis de ambiente
-├── README.md
-└── .gitignore
+meu-projeto-ia/
+├── README.md                       # A vitrine do projeto (este arquivo)
+├── notebooks/
+│   └── desenvolvimento.ipynb       # EDA, experimentos e treino do modelo
+├── src/
+│   └── app.py                      # Código organizado (app, funções, pipeline)
+├── data/                           # Dados brutos e tratados (ou instruções de download)
+├── relatorio/
+│   └── relatorio_tecnico.pdf       # Relatório técnico do projeto
+├── slides/
+│   └── pitch.pdf                   # Slides de apresentação
+└── requirements.txt                # Dependências para reproduzir o ambiente
 ```
 
 ## Como executar (interface web)
