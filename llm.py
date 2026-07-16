@@ -16,22 +16,44 @@ import os
 
 from groq import Groq
 
-API_KEY = os.environ.get("GROQ_API_KEY", "")
 MODELO = "llama-3.1-8b-instant"
 
 PROMPT_TEMPLATE = """Voce e um Consultor Inteligente de Procedimentos Internos
-ajudando um estagiario de suporte de TI. Responda a duvida do estagiario de forma
-direta, clara e profissional.
+ajudando um estagiario de suporte de TI. Responda a duvida do estagiario de
+forma direta, clara e profissional.
 
-Regra Fundamental: BASEIE SUA RESPOSTA EXCLUSIVAMENTE NOS PROCEDIMENTOS ABAIXO.
-Se a solucao nao estiver nos procedimentos, instrua o estagiario a escalar o
-ticket para um analista Senior.
+=== REGRA ABSOLUTA DE OURO ===
+Voce DEVE basear sua resposta EXCLUSIVAMENTE nos procedimentos abaixo.
+NAO invente passos que nao estejam listados.
+NAO pule nenhum passo listado.
 
-PROCEDIMENTOS INTERNOS RECUPERADOS (top {top_k} via busca semantica):
+=== QUANDO ESCALAR PARA O SENIOR ===
+- SOMENTE escale se NENHUM dos procedimentos abaixo tiver relacao
+  com o tema da duvida.
+- Se pelo menos um procedimento for do mesmo assunto da duvida, USE-O,
+  mesmo que ele nao responda literalmente a pergunta. Trate-o como a
+  fonte oficial de verdade.
+
+=== COMO USAR O PROCEDIMENTO ===
+1. Leia TODOS os procedimentos retornados.
+2. Escolha o mais relevante pelo TEMA (categoria), nao pela semelhanca
+   exata das palavras.
+3. Aplique a Acao Recomendada desse procedimento como sua resposta.
+4. Se a acao tiver passos, siga a ordem. Se o usuario pediu urgencia,
+   destaque o que pode ser feito imediatamente.
+
+=== FORMATO DA RESPOSTA ===
+- Comece com 1 frase confirmando o entendimento do problema.
+- Em seguida, liste a acao recomendada em topicos numerados.
+- Termine com 1 frase perguntando se o problema foi resolvido ou
+  se o estagiario precisa de mais alguma orientacao.
+
+=== PROCEDIMENTOS INTERNOS RECUPERADOS (top {top_k} via busca semantica) ===
 {fatos}
 
-DUVIDA DO ESTAGIARIO:
+=== DUVIDA DO ESTAGIARIO ===
 "{duvida}"
+=== SUA RESPOSTA ===
 """
 
 
@@ -61,23 +83,28 @@ def _formatar_fatos(resultados):
 
 def configurar():
     """Inicializacao lazy. Apenas avisa se a chave nao estiver configurada."""
-    if not API_KEY:
+    if not os.environ.get("GROQ_API_KEY"):
         print("[AVISO] GROQ_API_KEY nao definida. Crie um .env ou exporte a variavel.")
     return None
 
 
-def gerar_resposta(duvida, resultados, top_k=3):
-    """Envia o prompt para o llama-3.1-8b-instant (via Groq) e devolve o texto."""
-    if not API_KEY:
+def _get_api_key():
+    """Le a chave do ambiente a cada chamada para capturar o .env carregado depois."""
+    chave = os.environ.get("GROQ_API_KEY", "")
+    if not chave:
         raise RuntimeError(
             "GROQ_API_KEY nao configurada. Crie um .env na raiz do projeto "
             "com a linha: GROQ_API_KEY=gsk_sua_chave"
         )
+    return chave
 
+
+def gerar_resposta(duvida, resultados, top_k=3):
+    """Envia o prompt para o llama-3.1-8b-instant (via Groq) e devolve o texto."""
     fatos = _formatar_fatos(resultados)
     prompt = PROMPT_TEMPLATE.format(fatos=fatos, duvida=duvida, top_k=top_k)
 
-    client = Groq(api_key=API_KEY)
+    client = Groq(api_key=_get_api_key())
     response = client.chat.completions.create(
         model=MODELO,
         messages=[

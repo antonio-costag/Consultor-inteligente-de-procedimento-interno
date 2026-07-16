@@ -48,7 +48,11 @@ class SemanticSearch:
 
     def _carregar(self):
         try:
-            self.df = pd.read_csv(self.csv_path, sep=';', encoding='utf-8')
+            # Dataset original foi salvo em latin-1 (origem Excel brasileira)
+            try:
+                self.df = pd.read_csv(self.csv_path, sep=';', encoding='latin-1')
+            except UnicodeDecodeError:
+                self.df = pd.read_csv(self.csv_path, sep=';', encoding='utf-8')
         except FileNotFoundError:
             self.df = None
             return
